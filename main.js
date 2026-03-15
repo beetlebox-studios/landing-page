@@ -20,13 +20,13 @@ void main() {
 
 const MAX_BALLS = 16;
 
-// Metaball pass — logo contribution via pre-dilated texture (1 sample/fragment).
-const FS_METABALL = `#version 300 es
+// Pass 1 — write raw metaball field values (no threshold) into red channel.
+// Logo texture contributes a smooth distance-gradient falloff baked into the texture.
+const FS_FIELD = `#version 300 es
 precision highp float;
 in  vec2 v_uv;
 out vec4 fragColor;
 uniform vec2      u_res;
-uniform float     u_threshold;
 uniform vec3      u_balls[${MAX_BALLS}];
 uniform int       u_count;
 uniform sampler2D u_logo_dilated;
@@ -39,21 +39,60 @@ void main() {
     if (i >= u_count) break;
     vec2  d = px - u_balls[i].xy;
     float r = u_balls[i].z;
-    field += (r * r) / dot(d, d);
+    field += (r * r) / max(dot(d, d), 0.0001);
   }
   vec2 logo_uv = (px - u_logo_rect.xy) / u_logo_rect.zw;
   if (logo_uv.x >= 0.0 && logo_uv.x <= 1.0 && logo_uv.y >= 0.0 && logo_uv.y <= 1.0) {
-    float raw = texture(u_logo_dilated, vec2(logo_uv.x, 1.0 - logo_uv.y)).r;
-    // Smooth the edge: remap so the outermost fringe is a gradient rather than a cliff.
-    // smoothstep creates a soft ramp from 0 at the expand fringe to 1 at the solid core,
-    // giving metaballs a gradual surface to merge into instead of a hard wall.
-    float a = smoothstep(0.0, 0.55, raw);
+    // u_logo_dilated stores a smooth distance falloff: 1.0 at solid core, 0.0 at expand edge.
+    float a = texture(u_logo_dilated, vec2(logo_uv.x, 1.0 - logo_uv.y)).r;
     field += a * u_logo_str;
   }
+  // Store field in red channel — keep in 0..4 range via division so it survives RGBA8 storage
+  fragColor = vec4(field * 0.25, 0.0, 0.0, 1.0);
+}`;
+
+// Pass 2 — separable Gaussian blur (horizontal).
+const FS_BLUR_H = `#version 300 es
+precision highp float;
+in  vec2 v_uv;
+out vec4 fragColor;
+uniform sampler2D u_tex;
+uniform vec2      u_texel; // vec2(1/w, 0)
+void main() {
+  // 9-tap Gaussian kernel (sigma ≈ 2)
+  float w[5];
+  w[0]=0.2270270270; w[1]=0.1945945946; w[2]=0.1216216216; w[3]=0.0540540541; w[4]=0.0162162162;
+  float v = texture(u_tex, v_uv).r * w[0];
+  for (int i = 1; i <= 4; i++) {
+    vec2 off = float(i) * u_texel;
+    v += (texture(u_tex, v_uv + off).r + texture(u_tex, v_uv - off).r) * w[i];
+  }
+  fragColor = vec4(v, 0.0, 0.0, 1.0);
+}`;
+
+// Pass 3 — vertical blur + threshold + slime colour.
+const FS_BLUR_V_THRESH = `#version 300 es
+precision highp float;
+in  vec2 v_uv;
+out vec4 fragColor;
+uniform sampler2D u_tex;
+uniform vec2      u_texel; // vec2(0, 1/h)
+uniform float     u_threshold;
+void main() {
+  float w[5];
+  w[0]=0.2270270270; w[1]=0.1945945946; w[2]=0.1216216216; w[3]=0.0540540541; w[4]=0.0162162162;
+  float v = texture(u_tex, v_uv).r * w[0];
+  for (int i = 1; i <= 4; i++) {
+    vec2 off = float(i) * u_texel;
+    v += (texture(u_tex, v_uv + off).r + texture(u_tex, v_uv - off).r) * w[i];
+  }
+  // Recover field value (we stored field*0.25)
+  float field = v * 4.0;
   float inside = step(u_threshold, field);
   fragColor = vec4(vec3(0.565, 0.894, 0.235) * inside, 1.0);
 }`;
 
+// Pass 4 — pixelate the slime result.
 const FS_PIXEL = `#version 300 es
 precision highp float;
 in  vec2 v_uv;
@@ -67,6 +106,7 @@ void main() {
   fragColor    = texture(u_tex, snapped);
 }`;
 
+// Pass 5 — sharp black logo overlay on top of pixelated slime.
 const FS_LOGO = `#version 300 es
 precision highp float;
 in  vec2 v_uv;
@@ -107,9 +147,11 @@ function linkProgram(vs, fs) {
   return p;
 }
 
-const progMetaball = linkProgram(VS, FS_METABALL);
-const progPixel    = linkProgram(VS, FS_PIXEL);
-const progLogo     = linkProgram(VS, FS_LOGO);
+const progField      = linkProgram(VS, FS_FIELD);
+const progBlurH      = linkProgram(VS, FS_BLUR_H);
+const progBlurVThresh= linkProgram(VS, FS_BLUR_V_THRESH);
+const progPixel      = linkProgram(VS, FS_PIXEL);
+const progLogo       = linkProgram(VS, FS_LOGO);
 
 // ── VAOs ──────────────────────────────────────────────────────────────────────
 
@@ -130,30 +172,43 @@ function makeVAO(prog) {
   return vao;
 }
 
-const vaoMetaball = makeVAO(progMetaball);
-const vaoPixel    = makeVAO(progPixel);
-const vaoLogo     = makeVAO(progLogo);
+const vaoField       = makeVAO(progField);
+const vaoBlurH       = makeVAO(progBlurH);
+const vaoBlurVThresh = makeVAO(progBlurVThresh);
+const vaoPixel       = makeVAO(progPixel);
+const vaoLogo        = makeVAO(progLogo);
 
 // ── Uniform locations ─────────────────────────────────────────────────────────
 
-const uRes_mb         = gl.getUniformLocation(progMetaball, 'u_res');
-const uBalls_mb       = gl.getUniformLocation(progMetaball, 'u_balls[0]');
-const uCount_mb       = gl.getUniformLocation(progMetaball, 'u_count');
-const uThreshold_mb   = gl.getUniformLocation(progMetaball, 'u_threshold');
-const uLogoDilated_mb = gl.getUniformLocation(progMetaball, 'u_logo_dilated');
-const uLogoRect_mb    = gl.getUniformLocation(progMetaball, 'u_logo_rect');
-const uLogoStr_mb     = gl.getUniformLocation(progMetaball, 'u_logo_str');
+// Field pass
+const uRes_f         = gl.getUniformLocation(progField, 'u_res');
+const uBalls_f       = gl.getUniformLocation(progField, 'u_balls[0]');
+const uCount_f       = gl.getUniformLocation(progField, 'u_count');
+const uLogoDilated_f = gl.getUniformLocation(progField, 'u_logo_dilated');
+const uLogoRect_f    = gl.getUniformLocation(progField, 'u_logo_rect');
+const uLogoStr_f     = gl.getUniformLocation(progField, 'u_logo_str');
 
-const uTex_px         = gl.getUniformLocation(progPixel, 'u_tex');
-const uRes_px         = gl.getUniformLocation(progPixel, 'u_res');
-const uPixelSize_px   = gl.getUniformLocation(progPixel, 'u_pixel_size');
+// Blur H pass
+const uTex_bh        = gl.getUniformLocation(progBlurH, 'u_tex');
+const uTexel_bh      = gl.getUniformLocation(progBlurH, 'u_texel');
 
-const uLogo_lo        = gl.getUniformLocation(progLogo, 'u_logo');
-const uRes_lo         = gl.getUniformLocation(progLogo, 'u_res');
-const uPixelSize_lo   = gl.getUniformLocation(progLogo, 'u_pixel_size');
-const uLogoRect_lo    = gl.getUniformLocation(progLogo, 'u_logo_rect');
+// Blur V + threshold pass
+const uTex_bv        = gl.getUniformLocation(progBlurVThresh, 'u_tex');
+const uTexel_bv      = gl.getUniformLocation(progBlurVThresh, 'u_texel');
+const uThreshold_bv  = gl.getUniformLocation(progBlurVThresh, 'u_threshold');
 
-// ── Dev params (declared early so everything below can reference P) ────────────
+// Pixelate pass
+const uTex_px        = gl.getUniformLocation(progPixel, 'u_tex');
+const uRes_px        = gl.getUniformLocation(progPixel, 'u_res');
+const uPixelSize_px  = gl.getUniformLocation(progPixel, 'u_pixel_size');
+
+// Logo overlay pass
+const uLogo_lo       = gl.getUniformLocation(progLogo, 'u_logo');
+const uRes_lo        = gl.getUniformLocation(progLogo, 'u_res');
+const uPixelSize_lo  = gl.getUniformLocation(progLogo, 'u_pixel_size');
+const uLogoRect_lo   = gl.getUniformLocation(progLogo, 'u_logo_rect');
+
+// ── Dev params ────────────────────────────────────────────────────────────────
 
 const P = {
   threshold     : 1.92,
@@ -178,7 +233,9 @@ let logoTex           = null;
 let logoDilatedTex    = null;
 let logoDilatedExpand = -1;
 
-// CPU two-pass separable max-filter dilation — O(w*h*r) not O(w*h*r²)
+// Build a smooth distance-falloff texture:
+// pixels inside the original logo = 1.0, decaying to 0.0 at expand distance.
+// Uses a two-pass separable Gaussian blur on the alpha mask.
 function buildDilatedAlpha(img, expand) {
   const iw = img.naturalWidth, ih = img.naturalHeight;
   const src = document.createElement('canvas');
@@ -189,35 +246,48 @@ function buildDilatedAlpha(img, expand) {
   try { srcData = sctx.getImageData(0, 0, iw, ih).data; }
   catch (e) { return null; }
 
-  const alpha = new Float32Array(iw * ih);
-  for (let i = 0; i < iw * ih; i++) alpha[i] = srcData[i * 4 + 3] / 255;
+  // Seed: 1.0 where logo alpha > 0, else 0.0
+  const seed = new Float32Array(iw * ih);
+  for (let i = 0; i < iw * ih; i++) seed[i] = srcData[i * 4 + 3] > 10 ? 1.0 : 0.0;
 
-  const r = Math.round(expand);
-  if (r <= 0) {
-    const out = new Uint8Array(iw * ih);
-    for (let i = 0; i < iw * ih; i++) out[i] = srcData[i * 4 + 3];
-    return { data: out, width: iw, height: ih };
+  const r = Math.max(1, Math.round(expand));
+
+  // Build a Gaussian kernel of radius r
+  const sigma = r / 2.5;
+  const klen  = r * 2 + 1;
+  const kern  = new Float32Array(klen);
+  let ksum = 0;
+  for (let i = 0; i < klen; i++) {
+    const x = i - r;
+    kern[i] = Math.exp(-(x * x) / (2 * sigma * sigma));
+    ksum += kern[i];
   }
+  for (let i = 0; i < klen; i++) kern[i] /= ksum;
 
   // Horizontal pass
   const hPass = new Float32Array(iw * ih);
   for (let y = 0; y < ih; y++) {
     for (let x = 0; x < iw; x++) {
-      let best = 0;
-      const x0 = Math.max(0, x - r), x1 = Math.min(iw - 1, x + r);
-      for (let kx = x0; kx <= x1; kx++) best = Math.max(best, alpha[y * iw + kx]);
-      hPass[y * iw + x] = best;
+      let acc = 0;
+      for (let k = 0; k < klen; k++) {
+        const sx = Math.min(iw - 1, Math.max(0, x + k - r));
+        acc += seed[y * iw + sx] * kern[k];
+      }
+      hPass[y * iw + x] = acc;
     }
   }
 
-  // Vertical pass
+  // Vertical pass — output to Uint8
   const out = new Uint8Array(iw * ih);
   for (let x = 0; x < iw; x++) {
     for (let y = 0; y < ih; y++) {
-      let best = 0;
-      const y0 = Math.max(0, y - r), y1 = Math.min(ih - 1, y + r);
-      for (let ky = y0; ky <= y1; ky++) best = Math.max(best, hPass[ky * iw + x]);
-      out[y * iw + x] = Math.round(best * 255);
+      let acc = 0;
+      for (let k = 0; k < klen; k++) {
+        const sy = Math.min(ih - 1, Math.max(0, y + k - r));
+        acc += hPass[sy * iw + x] * kern[k];
+      }
+      // acc is in 0..1; clamp and store
+      out[y * iw + x] = Math.min(255, Math.round(acc * 255 * 1.8)); // slight boost
     }
   }
 
@@ -263,29 +333,45 @@ function uploadLogoTexture() {
   rebuildDilatedTex();
 }
 
-// ── FBO ───────────────────────────────────────────────────────────────────────
+// ── FBOs (field, blurH, blurV/slime, pixelated) ───────────────────────────────
 
-let fbo, fboTex;
+let fboField, fboFieldTex;
+let fboBlurH, fboBlurHTex;
+let fboSlime, fboSlimeTex;
 
-function createFBO(w, h) {
-  if (fboTex) gl.deleteTexture(fboTex);
-  if (fbo)    gl.deleteFramebuffer(fbo);
-  fboTex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, fboTex);
+function makeFBO(w, h, filter) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  fbo = gl.createFramebuffer();
+  const fbo = gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.bindTexture(gl.TEXTURE_2D, null);
+  return { fbo, tex };
+}
+
+function destroyFBO(pair) {
+  if (pair) { gl.deleteTexture(pair.tex); gl.deleteFramebuffer(pair.fbo); }
+}
+
+function createFBOs(w, h) {
+  destroyFBO(fboField); destroyFBO(fboBlurH); destroyFBO(fboSlime);
+  const f = makeFBO(w, h, gl.LINEAR);
+  fboField = f.fbo; fboFieldTex = f.tex;
+  const bh = makeFBO(w, h, gl.LINEAR);
+  fboBlurH = bh.fbo; fboBlurHTex = bh.tex;
+  const s = makeFBO(w, h, gl.NEAREST);
+  fboSlime = s.fbo; fboSlimeTex = s.tex;
 }
 
 // ── Resize ────────────────────────────────────────────────────────────────────
 
-let logoRect = null; // {x, y, w, h} in canvas-space, cached
+let logoRect = null;
 
 function getLogoRect() {
   if (heroLogo.naturalWidth > 0) {
@@ -304,7 +390,7 @@ function resize() {
   canvas.width  = hero.clientWidth;
   canvas.height = hero.clientHeight;
   gl.viewport(0, 0, canvas.width, canvas.height);
-  createFBO(canvas.width, canvas.height);
+  createFBOs(canvas.width, canvas.height);
   if (heroLogo.naturalWidth > 0) logoRect = getLogoRect();
 }
 window.addEventListener('resize', resize);
@@ -527,50 +613,73 @@ const ballData = new Float32Array(MAX_BALLS * 3);
 function renderSlime() {
   updateDrips();
 
-  const h   = canvas.height;
+  const W = canvas.width, H = canvas.height;
   const cur = logoRect || getLogoRect();
-  const lrX = cur.x, lrY = h - cur.y - cur.h, lrW = cur.w, lrH = cur.h;
+  // Convert to WebGL bottom-left coords
+  const lrX = cur.x, lrY = H - cur.y - cur.h, lrW = cur.w, lrH = cur.h;
 
-  // Build ball list directly into pre-allocated array
+  // Build ball list into pre-allocated array
   ballData[0] = smoothMouse.x;
-  ballData[1] = h - smoothMouse.y;
+  ballData[1] = H - smoothMouse.y;
   ballData[2] = P.mouseR;
   let count = 1;
   for (let i = 0; i < drips.length && count < MAX_BALLS; i++, count++) {
     ballData[count * 3]     = drips[i].x;
-    ballData[count * 3 + 1] = h - drips[i].y;
+    ballData[count * 3 + 1] = H - drips[i].y;
     ballData[count * 3 + 2] = drips[i].r;
   }
 
-  // Pass 1 — metaball + logo → FBO
-  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-  gl.viewport(0, 0, canvas.width, h);
-  gl.useProgram(progMetaball);
-  gl.bindVertexArray(vaoMetaball);
-  gl.uniform2f(uRes_mb, canvas.width, h);
-  gl.uniform1f(uThreshold_mb, P.threshold);
-  gl.uniform3fv(uBalls_mb, ballData);
-  gl.uniform1i(uCount_mb, count);
+  // ── Pass 1: field values → fboField ──────────────────────────────────────
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboField);
+  gl.viewport(0, 0, W, H);
+  gl.useProgram(progField);
+  gl.bindVertexArray(vaoField);
+  gl.uniform2f(uRes_f, W, H);
+  gl.uniform3fv(uBalls_f, ballData);
+  gl.uniform1i(uCount_f, count);
   gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, logoDilatedTex || null);
-  gl.uniform1i(uLogoDilated_mb, 1);
-  gl.uniform4f(uLogoRect_mb, lrX, lrY, lrW, lrH);
-  gl.uniform1f(uLogoStr_mb, logoDilatedTex ? P.logoStr : 0.0);
+  gl.uniform1i(uLogoDilated_f, 1);
+  gl.uniform4f(uLogoRect_f, lrX, lrY, lrW, lrH);
+  gl.uniform1f(uLogoStr_f, logoDilatedTex ? P.logoStr : 0.0);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-  // Pass 2 — pixelate → screen
+  // ── Pass 2: horizontal blur → fboBlurH ───────────────────────────────────
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboBlurH);
+  gl.viewport(0, 0, W, H);
+  gl.useProgram(progBlurH);
+  gl.bindVertexArray(vaoBlurH);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, fboFieldTex);
+  gl.uniform1i(uTex_bh, 0);
+  gl.uniform2f(uTexel_bh, 1.0 / W, 0.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+  // ── Pass 3: vertical blur + threshold → fboSlime ─────────────────────────
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboSlime);
+  gl.viewport(0, 0, W, H);
+  gl.useProgram(progBlurVThresh);
+  gl.bindVertexArray(vaoBlurVThresh);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, fboBlurHTex);
+  gl.uniform1i(uTex_bv, 0);
+  gl.uniform2f(uTexel_bv, 0.0, 1.0 / H);
+  gl.uniform1f(uThreshold_bv, P.threshold);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+  // ── Pass 4: pixelate → screen ─────────────────────────────────────────────
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  gl.viewport(0, 0, canvas.width, h);
+  gl.viewport(0, 0, W, H);
   gl.useProgram(progPixel);
   gl.bindVertexArray(vaoPixel);
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, fboTex);
+  gl.bindTexture(gl.TEXTURE_2D, fboSlimeTex);
   gl.uniform1i(uTex_px, 0);
-  gl.uniform2f(uRes_px, canvas.width, h);
+  gl.uniform2f(uRes_px, W, H);
   gl.uniform1f(uPixelSize_px, P.pixelSize);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-  // Pass 3 — black logo overlay
+  // ── Pass 5: sharp logo overlay ────────────────────────────────────────────
   if (logoTex) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -579,7 +688,7 @@ function renderSlime() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, logoTex);
     gl.uniform1i(uLogo_lo, 0);
-    gl.uniform2f(uRes_lo, canvas.width, h);
+    gl.uniform2f(uRes_lo, W, H);
     gl.uniform1f(uPixelSize_lo, P.pixelSize);
     gl.uniform4f(uLogoRect_lo, lrX, lrY, lrW, lrH);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
