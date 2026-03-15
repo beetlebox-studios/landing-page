@@ -7,31 +7,59 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ── Fixed nav ───────────────────────────────────────── -->
-<nav>
-  <span class="nav-logo">BeetleBox</span>
+<!-- ── Floating logo ───────────────────────────────────── -->
+<div id="floating-logo">BeetleBox</div>
+
+<!-- ── Floating action bar ────────────────────────────── -->
+<nav id="action-bar">
+  <div class="ab-item">
+    <a href="#work" class="ab-link">Work</a>
+    <div class="ab-dropdown">
+      <a href="#work">Selected Work</a>
+    </div>
+  </div>
+  <div class="ab-item">
+    <a href="#about" class="ab-link">About</a>
+    <div class="ab-dropdown">
+      <a href="#about">Studio</a>
+    </div>
+  </div>
+  <div class="ab-item">
+    <a href="#services" class="ab-link">Capabilities</a>
+    <div class="ab-dropdown">
+      <a href="#services">Real-time Shaders</a>
+      <a href="#services">Physics Simulations</a>
+      <a href="#services">Procedural Generation</a>
+      <a href="#services">Post-processing</a>
+      <a href="#services">Installations</a>
+    </div>
+  </div>
+  <div class="ab-item">
+    <a href="#contact" class="ab-link">Contact</a>
+    <div class="ab-dropdown">
+      <a href="mailto:hello@beetlebox.dev"><i class="fa-solid fa-envelope"></i> hello@beetlebox.dev</a>
+    </div>
+  </div>
 </nav>
 
 <!-- ── Hero (WebGL metaball shader) ────────────────────── -->
 <section id="hero">
   <canvas id="metaball-canvas"></canvas>
 
-  <div class="hero-nav-row">
-    <a href="#work">Work</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </div>
+  <!-- Centered logo image (used as slime mask & display) -->
+  <img id="hero-logo" src="bbtextpng.png" alt="BeetleBox" />
 
-  <!-- Centered image circle — set src to your image path -->
-  <div id="hero-circle">
-    <img id="hero-circle-img" src="beetle_square.png" alt="" />
-  </div>
+  <!-- Viz sandbox arrows -->
+  <button class="hero-arrow hero-arrow--left"  id="viz-prev" aria-label="Previous">&#8592;</button>
+  <button class="hero-arrow hero-arrow--right" id="viz-next" aria-label="Next">&#8594;</button>
 
-  <p class="hero-scroll-hint">Scroll</p>
+  <!-- Viz label -->
+  <div id="viz-label"></div>
 </section>
 
 <!-- ── Work ────────────────────────────────────────────── -->
@@ -39,27 +67,32 @@
   <p class="section-label">Selected work</p>
   <div class="work-grid">
     <div class="work-item">
+      <!-- Replace src with your image path, e.g. src="work/fluid-dynamics.jpg" -->
+      <img class="work-img" src="" alt="Fluid Dynamics" />
       <div class="work-overlay">
-        <p class="work-title">Fluid Dynamics</p>
-        <p class="work-meta">WebGL · 2025</p>
+        <p class="work-title">Project 1</p>
+        <p class="work-meta">Text · 2025</p>
       </div>
     </div>
     <div class="work-item">
+      <img class="work-img" src="" alt="Particle Systems" />
       <div class="work-overlay">
-        <p class="work-title">Particle Systems</p>
-        <p class="work-meta">GLSL · 2025</p>
+        <p class="work-title">Project 2</p>
+        <p class="work-meta">Text · 2025</p>
       </div>
     </div>
     <div class="work-item">
+      <img class="work-img" src="" alt="Ray Marching" />
       <div class="work-overlay">
-        <p class="work-title">Ray Marching</p>
-        <p class="work-meta">Shader · 2024</p>
+        <p class="work-title">Project 3</p>
+        <p class="work-meta">Text · 2024</p>
       </div>
     </div>
     <div class="work-item">
+      <img class="work-img" src="" alt="Cloth Simulation" />
       <div class="work-overlay">
-        <p class="work-title">Cloth Simulation</p>
-        <p class="work-meta">WebGPU · 2024</p>
+        <p class="work-title">Project 4</p>
+        <p class="work-meta">Text · 2024</p>
       </div>
     </div>
   </div>
@@ -71,9 +104,7 @@
   <div class="about-layout">
     <h2 class="about-heading">We build things<br>that move.</h2>
     <div class="about-body">
-      <p>GraphX is a real-time graphics playground — a collection of shaders, simulations, and interactive experiments built on WebGL and WebGPU.</p>
-      <p>Each piece explores a different corner of the GPU pipeline: fluid dynamics, signed distance functions, particle systems, deferred rendering, and more. Built for the browser, no install required.</p>
-      <p>Open source. Contributions welcome.</p>
+      <p>asdf</p>
     </div>
   </div>
 </section>
@@ -99,18 +130,8 @@
 
   <div class="contact-footer">
     <div class="contact-footer-left">
-      <p>© GraphX 2026</p>
-      <p>hello@graphx.dev</p>
-    </div>
-    <div class="contact-offices">
-      <div class="contact-office">
-        <h4>New York</h4>
-        <p>Brooklyn, NY<br>United States</p>
-      </div>
-      <div class="contact-office">
-        <h4>London</h4>
-        <p>Shoreditch, E1<br>United Kingdom</p>
-      </div>
+      <p>© BeetleBox 2026</p>
+      <p>hello@beetlebox.dev</p>
     </div>
   </div>
 </section>
@@ -138,12 +159,22 @@
     <input type="range" id="s-pixel" min="1" max="32" step="1" value="8">
     <span class="val" id="v-pixel">8</span>
   </div>
+  <h2 style="margin-top:12px">Dev — Logo Balls</h2>
   <div class="dev-row">
-    <label>Circle radius</label>
-    <input type="range" id="s-circle-r" min="40" max="400" step="1" value="160">
-    <span class="val" id="v-circle-r">160</span>
+    <label>Cols (0=auto)</label>
+    <input type="range" id="s-logo-cols" min="0" max="20" step="1" value="0">
+    <span class="val" id="v-logo-cols">0</span>
   </div>
-
+  <div class="dev-row">
+    <label>Rows (0=auto)</label>
+    <input type="range" id="s-logo-rows" min="0" max="10" step="1" value="0">
+    <span class="val" id="v-logo-rows">0</span>
+  </div>
+  <div class="dev-row">
+    <label>Radius mult</label>
+    <input type="range" id="s-logo-rmult" min="0.3" max="2.0" step="0.05" value="0.75">
+    <span class="val" id="v-logo-rmult">0.75</span>
+  </div>
   <h2 style="margin-top:12px">Dev — Slime</h2>
   <div class="dev-row">
     <label>Gravity</label>
@@ -186,8 +217,6 @@
     <span class="val" id="v-drip-max">10</span>
   </div>
 </div>
-
-<span id="dev-hint">` — dev panel</span>
 
 <script src="main.js"></script>
 </body>

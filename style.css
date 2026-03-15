@@ -5,60 +5,123 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
-  background: #fff;
-  color: #111;
+  background: #0b0e14;
+  color: #e8eaf0;
   overflow-x: hidden;
 }
 
 a { color: inherit; text-decoration: none; }
 
-/* ── Fixed nav ─────────────────────────────────────── */
-nav {
+/* ── Floating logo ─────────────────────────────────── */
+#floating-logo {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 40px;
-  mix-blend-mode: difference;
-}
-
-.nav-logo {
+  top: 28px;
+  left: 36px;
+  z-index: 300;
   font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.nav-links {
-  display: flex;
-  gap: 36px;
-  align-items: center;
-}
-
-.nav-links a {
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-.nav-links a:hover { opacity: 1; }
-
-.nav-locations {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-locations span {
-  font-size: 0.65rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #fff;
-  opacity: 0.4;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+
+/* ── Floating action bar ───────────────────────────── */
+#action-bar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: rgba(16, 21, 30, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+
+/* Top-level nav item wrapper */
+.ab-item {
+  position: relative;
+}
+
+.ab-link {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 7px 16px;
+  border-radius: 999px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.ab-item:hover .ab-link {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Dropdown panel */
+.ab-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  background: rgba(14, 18, 28, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ab-item:hover .ab-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ab-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.ab-dropdown a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.ab-dropdown a i {
+  opacity: 0.5;
+  font-size: 0.65rem;
+  width: 12px;
+  text-align: center;
 }
 
 /* ── Hero ──────────────────────────────────────────── */
@@ -66,8 +129,8 @@ nav {
   position: relative;
   width: 100vw;
   height: 100vh;
-  /* No overflow:hidden — circle can bleed into next section */
-  background: #0a0a0f;
+  background: #080b11;
+  --accent: #90E43C; /* updated by JS per active viz */
 }
 
 #metaball-canvas {
@@ -78,70 +141,65 @@ nav {
   pointer-events: none;
 }
 
-
-.hero-nav-row {
+.hero-eyebrow {
   position: absolute;
   bottom: 52px;
-  right: 40px;
-  display: flex;
-  gap: 28px;
-  mix-blend-mode: difference;
-}
-
-.hero-nav-row a {
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  left: 40px;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  transition: color 0.2s;
-  pointer-events: all;
+  color: rgba(255, 255, 255, 0.28);
 }
-.hero-nav-row a:hover { color: #fff; }
 
-/* Centered image circle */
-#hero-circle {
+/* Logo image — hidden; kept in DOM only for mask sampling */
+#hero-logo {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 320px;       /* overridden by JS each frame */
-  height: 320px;
-  border-radius: 50%;
-  overflow: hidden;
+  visibility: hidden;
   pointer-events: none;
-  background: transparent;
-  z-index: 2;
 }
 
-#hero-circle-img {
-  width: 50%;
-  height: 50%;
-  object-fit: cover;
-  display: block;
-  margin: auto;
-  position: relative;
+/* Viz sandbox arrows */
+.hero-arrow {
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  /* Hidden until a real src is set */
-  opacity: 0;
-  transition: opacity 0.4s;
+  z-index: 10;
+  background: rgba(16, 21, 30, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
 }
-
-/* Show image once src is populated */
-#hero-circle-img[src]:not([src=""]) {
-  opacity: 1;
+.hero-arrow:hover {
+  color: #fff;
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
+.hero-arrow--left  { left: 32px; }
+.hero-arrow--right { right: 32px; }
 
-.hero-scroll-hint {
+/* Viz name label */
+#viz-label {
   position: absolute;
-  bottom: 28px;
+  bottom: 52px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.6rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.2);
-  mix-blend-mode: difference;
+  color: var(--accent);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
 }
 
 /* ── Page sections ─────────────────────────────────── */
@@ -150,19 +208,19 @@ section {
 }
 
 .section-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.22em;
+  font-size: 0.62rem;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.25);
   margin-bottom: 64px;
 }
 
 /* ── Work grid ─────────────────────────────────────── */
 #work {
-  background: #fff;
-  border-top: 1px solid #e8e8e8;
+  background: #0b0e14;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
-  z-index: 3;  /* sits above the hero circle overflow */
+  z-index: 3;
 }
 
 .work-grid {
@@ -173,10 +231,32 @@ section {
 
 .work-item {
   aspect-ratio: 4/3;
-  background: #f0f0f0;
+  background: #11151e;
   position: relative;
   overflow: hidden;
   cursor: pointer;
+}
+
+/* Work item image */
+.work-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease, opacity 0.3s;
+  opacity: 0;   /* hidden when src is empty */
+}
+
+/* Show the image when src is set */
+.work-img[src]:not([src=""]) {
+  opacity: 1;
+}
+
+/* Subtle zoom on hover when image is present */
+.work-item:hover .work-img {
+  transform: scale(1.04);
 }
 
 .work-item:hover .work-overlay { opacity: 1; }
@@ -184,13 +264,19 @@ section {
 .work-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.88);
+  background: linear-gradient(to top, rgba(5, 8, 16, 0.92) 0%, rgba(5, 8, 16, 0.4) 60%, transparent 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 28px 32px;
   opacity: 0;
   transition: opacity 0.3s ease;
+}
+
+/* When no image is loaded, always show overlay label */
+.work-item:not(:has(.work-img[src]:not([src=""]))) .work-overlay {
+  opacity: 1;
+  background: linear-gradient(to top, rgba(5, 8, 16, 0.7) 0%, transparent 100%);
 }
 
 .work-title {
@@ -202,21 +288,34 @@ section {
 }
 
 .work-meta {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.35);
 }
 
-.work-item:nth-child(1) { background: #c8c8c8; }
-.work-item:nth-child(2) { background: #d4d4d4; }
-.work-item:nth-child(3) { background: #b8b8b8; }
-.work-item:nth-child(4) { background: #e0e0e0; }
+/* Placeholder colors when no image is set */
+.work-item:nth-child(1) { background: #0f1420; }
+.work-item:nth-child(2) { background: #101520; }
+.work-item:nth-child(3) { background: #0d1219; }
+.work-item:nth-child(4) { background: #121622; }
+
+/* Subtle border on work card hover */
+.work-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  transition: border-color 0.3s;
+  pointer-events: none;
+  z-index: 2;
+}
+.work-item:hover::after { border-color: rgba(255, 255, 255, 0.08); }
 
 /* ── About ─────────────────────────────────────────── */
 #about {
-  background: #fff;
-  border-top: 1px solid #e8e8e8;
+  background: #0b0e14;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .about-layout {
@@ -231,7 +330,7 @@ section {
   font-weight: 300;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  color: #111;
+  color: #fff;
 }
 
 .about-body {
@@ -240,8 +339,8 @@ section {
 
 .about-body p {
   font-size: 0.9rem;
-  line-height: 1.8;
-  color: #555;
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.4);
   margin-bottom: 24px;
 }
 
@@ -249,8 +348,8 @@ section {
 
 /* ── Services ──────────────────────────────────────── */
 #services {
-  background: #f7f7f7;
-  border-top: 1px solid #e8e8e8;
+  background: #080b11;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .services-list {
@@ -262,29 +361,29 @@ section {
   align-items: baseline;
   justify-content: space-between;
   padding: 22px 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-size: clamp(1rem, 2.5vw, 1.4rem);
   font-weight: 300;
   letter-spacing: -0.01em;
-  color: #111;
+  color: rgba(255, 255, 255, 0.75);
   cursor: default;
   transition: color 0.2s;
 }
-.services-list li:first-child { border-top: 1px solid #e0e0e0; }
-.services-list li:hover { color: #0078ff; }
+.services-list li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.services-list li:hover { color: #fff; }
 
 .services-list li span {
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #bbb;
+  color: rgba(255, 255, 255, 0.2);
 }
-.services-list li:hover span { color: #0078ff; }
+.services-list li:hover span { color: rgba(255, 255, 255, 0.4); }
 
 /* ── Contact / footer ──────────────────────────────── */
 #contact {
-  background: #111;
-  border-top: 1px solid #222;
+  background: #060810;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding: 100px 40px 60px;
   color: #fff;
 }
@@ -300,16 +399,19 @@ section {
 
 .contact-heading a {
   color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  transition: border-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: color 0.2s, border-color 0.2s;
 }
-.contact-heading a:hover { border-color: #fff; }
+.contact-heading a:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
 
 .contact-footer {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-top: 1px solid #2a2a2a;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 36px;
   margin-top: 80px;
 }
@@ -323,7 +425,7 @@ section {
 .contact-footer-left p {
   font-size: 0.7rem;
   letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.2);
 }
 
 .contact-offices {
@@ -332,17 +434,17 @@ section {
 }
 
 .contact-office h4 {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.2);
   margin-bottom: 6px;
 }
 
 .contact-office p {
   font-size: 0.78rem;
   line-height: 1.7;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* ── Dev panel ─────────────────────────────────────── */
@@ -350,13 +452,16 @@ section {
   display: none;
   position: fixed;
   top: 20px;
-  left: 20px;
-  z-index: 300;
-  background: rgba(8, 8, 14, 0.92);
-  border: 1px solid rgba(255,255,255,0.08);
+  right: 20px;
+  left: auto;
+  z-index: 9999;
+  background: rgba(8, 11, 18, 0.96);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 10px;
   padding: 16px 20px 18px;
   min-width: 260px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   backdrop-filter: blur(16px);
   color: rgba(255,255,255,0.75);
   font-size: 0.76rem;
@@ -365,13 +470,13 @@ section {
 #dev-panel.visible { display: block; }
 
 #dev-panel h2 {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.22);
   margin-bottom: 14px;
   padding-top: 2px;
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 #dev-panel h2:first-of-type {
   border-top: none;
@@ -384,22 +489,11 @@ section {
   gap: 10px;
   margin-bottom: 9px;
 }
-.dev-row label { flex: 0 0 116px; color: rgba(255,255,255,0.45); }
-.dev-row input[type=range] { flex: 1; accent-color: #555; cursor: pointer; }
+.dev-row label { flex: 0 0 116px; color: rgba(255,255,255,0.4); }
+.dev-row input[type=range] { flex: 1; accent-color: #90E43C; cursor: pointer; }
 .dev-row .val {
   flex: 0 0 36px;
   text-align: right;
   color: #fff;
   font-variant-numeric: tabular-nums;
-}
-
-#dev-hint {
-  position: fixed;
-  bottom: 22px;
-  right: 28px;
-  font-size: 0.6rem;
-  color: rgba(0,0,0,0.18);
-  letter-spacing: 0.1em;
-  z-index: 10;
-  mix-blend-mode: multiply;
 }
