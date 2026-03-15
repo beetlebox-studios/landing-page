@@ -141,8 +141,8 @@
   <h2>Dev — Metaball</h2>
   <div class="dev-row">
     <label>Threshold</label>
-    <input type="range" id="s-threshold" min="0.3" max="3.0" step="0.01" value="1.02">
-    <span class="val" id="v-threshold">1.02</span>
+    <input type="range" id="s-threshold" min="0.3" max="3.0" step="0.01" value="1.92">
+    <span class="val" id="v-threshold">1.92</span>
   </div>
   <div class="dev-row">
     <label>Mouse radius</label>
@@ -156,50 +156,45 @@
   </div>
   <div class="dev-row">
     <label>Pixel size</label>
-    <input type="range" id="s-pixel" min="1" max="32" step="1" value="8">
-    <span class="val" id="v-pixel">8</span>
+    <input type="range" id="s-pixel" min="1" max="32" step="1" value="6">
+    <span class="val" id="v-pixel">6</span>
   </div>
-  <h2 style="margin-top:12px">Dev — Logo Balls</h2>
+  <h2 style="margin-top:12px">Dev — Logo</h2>
   <div class="dev-row">
-    <label>Cols (0=auto)</label>
-    <input type="range" id="s-logo-cols" min="0" max="20" step="1" value="0">
-    <span class="val" id="v-logo-cols">0</span>
-  </div>
-  <div class="dev-row">
-    <label>Rows (0=auto)</label>
-    <input type="range" id="s-logo-rows" min="0" max="10" step="1" value="0">
-    <span class="val" id="v-logo-rows">0</span>
+    <label>Logo strength</label>
+    <input type="range" id="s-logo-str" min="0.5" max="50.0" step="0.5" value="30.0">
+    <span class="val" id="v-logo-str">30.00</span>
   </div>
   <div class="dev-row">
-    <label>Radius mult</label>
-    <input type="range" id="s-logo-rmult" min="0.3" max="2.0" step="0.05" value="0.75">
-    <span class="val" id="v-logo-rmult">0.75</span>
+    <label>Logo expand</label>
+    <input type="range" id="s-logo-expand" min="0" max="80" step="1" value="36">
+    <span class="val" id="v-logo-expand">36</span>
   </div>
   <h2 style="margin-top:12px">Dev — Slime</h2>
   <div class="dev-row">
     <label>Gravity</label>
-    <input type="range" id="s-gravity" min="0.01" max="0.3" step="0.005" value="0.250">
-    <span class="val" id="v-gravity">0.250</span>
+    <input type="range" id="s-gravity" min="0.01" max="0.5" step="0.005" value="0.300">
+    <span class="val" id="v-gravity">0.300</span>
   </div>
   <div class="dev-row">
     <label>Viscosity</label>
-    <input type="range" id="s-viscosity" min="0.5" max="0.99" step="0.01" value="0.92">
-    <span class="val" id="v-viscosity">0.92</span>
+    <input type="range" id="s-viscosity" min="0.5" max="0.999" step="0.001" value="0.99">
+    <span class="val" id="v-viscosity">0.99</span>
   </div>
   <div class="dev-row">
     <label>Surf tension</label>
-    <input type="range" id="s-tension" min="0.01" max="0.5" step="0.01" value="0.03">
-    <span class="val" id="v-tension">0.03</span>
+    <input type="range" id="s-tension" min="0.001" max="0.5" step="0.001" value="0.01">
+    <span class="val" id="v-tension">0.01</span>
   </div>
   <div class="dev-row">
     <label>Detach dist</label>
-    <input type="range" id="s-detach" min="5" max="120" step="1" value="12">
-    <span class="val" id="v-detach">12</span>
+    <input type="range" id="s-detach" min="5" max="200" step="1" value="22">
+    <span class="val" id="v-detach">22</span>
   </div>
   <div class="dev-row">
     <label>Stretch frames</label>
-    <input type="range" id="s-stretch" min="10" max="180" step="1" value="10">
-    <span class="val" id="v-stretch">10</span>
+    <input type="range" id="s-stretch" min="10" max="300" step="1" value="22">
+    <span class="val" id="v-stretch">22</span>
   </div>
   <div class="dev-row">
     <label>Spawn interval</label>
@@ -208,14 +203,21 @@
   </div>
   <div class="dev-row">
     <label>Drip size min</label>
-    <input type="range" id="s-drip-min" min="5" max="60" step="1" value="5">
-    <span class="val" id="v-drip-min">5</span>
+    <input type="range" id="s-drip-min" min="5" max="60" step="1" value="8">
+    <span class="val" id="v-drip-min">8</span>
   </div>
   <div class="dev-row">
     <label>Drip size max</label>
-    <input type="range" id="s-drip-max" min="10" max="100" step="1" value="10">
-    <span class="val" id="v-drip-max">10</span>
+    <input type="range" id="s-drip-max" min="10" max="100" step="1" value="16">
+    <span class="val" id="v-drip-max">16</span>
   </div>
+  <h2 style="margin-top:12px">Dev — Perf</h2>
+  <div class="dev-row"><label>FPS</label><span class="val" id="v-fps">—</span></div>
+  <div class="dev-row"><label>Frame ms</label><span class="val" id="v-frame-ms">—</span></div>
+  <div class="dev-row"><label>Drips</label><span class="val" id="v-drips">—</span></div>
+  <div class="dev-row"><label>Frag pixels</label><span class="val" id="v-frag-px">—</span></div>
+  <div class="dev-row"><label>Canvas W</label><span class="val" id="v-res-w">—</span></div>
+  <div class="dev-row"><label>Canvas H</label><span class="val" id="v-res-h">—</span></div>
 </div>
 
 <script src="main.js"></script>
