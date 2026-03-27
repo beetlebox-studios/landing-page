@@ -3,7 +3,7 @@
     "name": "Elan",
     "role": "Game Director",
     "bio": "Placeholder — a sentence or two about this person, their focus, and what they bring to the studio.",
-    "image": "elan.JPG",
+    "image": "images/elan.JPG",
     "founder": true,
     "links": {
       "github": "https://github.com/Elan-Rubin",
@@ -16,7 +16,7 @@
     "name": "Max",
     "role": "Lead Programmer",
     "bio": "Placeholder — background in Unity, gameplay systems, and engine architecture.",
-    "image": "max.JPG",
+    "image": "images/max.JPG",
     "founder": true,
     "links": {
       "twitter": "",

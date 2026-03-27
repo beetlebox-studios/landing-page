@@ -132,7 +132,7 @@ const CARD_TYPES = {
   // ── Person card ─────────────────────────────────────────────────────────────
   person: {
     // PNG to use as the founder sticker — swap for any image in the project
-    FOUNDER_STICKER: 'chicken1.png',
+    FOUNDER_STICKER: 'images/stickers/chicken1.png',
 
     buildCard(item, i) {
       const isFounder = !!item.founder;
@@ -324,5 +324,5 @@ function buildLinks(links, defs, className) {
 
 // ── Instantiate grids ─────────────────────────────────────────────────────────
 
-new CardGrid({ src: 'games.json',  target: 'games-grid',  type: 'game'   });
-new CardGrid({ src: 'people.json', target: 'people-grid', type: 'person' });
+new CardGrid({ src: 'data/games.json',  target: 'games-grid',  type: 'game'   });
+new CardGrid({ src: 'data/people.json', target: 'people-grid', type: 'person' });

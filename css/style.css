@@ -337,7 +337,7 @@ mark.search-hl.search-hl--current {
 .work-table-bg {
   position: absolute;
   inset: 0;
-  background-image: url('woodgrain.jpg');
+  background-image: url('../images/woodgrain.jpg');
   background-size: cover;
   background-position: center;
   filter: grayscale(1) brightness(0.32);

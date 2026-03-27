@@ -13,17 +13,17 @@
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const STICKER_FILES = [
-  'rose.png',
-  'mask.png',
-  'bell.png',
-  'sp_ship1.png',
-  'enemy_slime.png',
-  'enemy_bat.png',
-  'enemy_maggot.png',
-  'enemy_skeleton.png',
-  'eel_egg_landed.png',
-  'littlefish.png',
-  'urchin2.png',
+  'images/stickers/rose.png',
+  'images/stickers/mask.png',
+  'images/stickers/bell.png',
+  'images/stickers/sp_ship1.png',
+  'images/stickers/enemy_slime.png',
+  'images/stickers/enemy_bat.png',
+  'images/stickers/enemy_maggot.png',
+  'images/stickers/enemy_skeleton.png',
+  'images/stickers/eel_egg_landed.png',
+  'images/stickers/littlefish.png',
+  'images/stickers/urchin2.png',
 ];
 
 const STICKER_LERP        = 0.18; // drag follow smoothness
