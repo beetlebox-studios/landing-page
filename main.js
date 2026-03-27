@@ -3,7 +3,6 @@
 const canvas   = document.getElementById('metaball-canvas');
 const hero     = document.getElementById('hero');
 const heroLogo = document.getElementById('hero-logo');
-const vizLabel = document.getElementById('viz-label');
 
 const gl = canvas.getContext('webgl2');
 if (!gl) { hero.style.background = '#080b11'; throw new Error('WebGL2 not supported'); }
@@ -701,7 +700,7 @@ function renderSlime() {
 const VIZZES = [
   {
     name:   'Slime',
-    accent: '#90E43C',
+    accent: 'var(--primary)',
     init()    { drips = []; spawnTimer = 0; sampleLogoMask(); },
     render()  { renderSlime(); },
     destroy() {},
@@ -715,7 +714,6 @@ function setViz(idx) {
   vizIndex = ((idx % VIZZES.length) + VIZZES.length) % VIZZES.length;
   const viz = VIZZES[vizIndex];
   viz.init();
-  vizLabel.textContent = viz.name;
   hero.style.setProperty('--accent', viz.accent || '#fff');
 }
 

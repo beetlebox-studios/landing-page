@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Elan",
+    "role": "Game Director",
+    "bio": "Placeholder — a sentence or two about this person, their focus, and what they bring to the studio.",
+    "image": "IMG_9523.JPG",
+    "links": {
+      "twitter": "",
+      "github": "",
+      "itch": ""
+    }
+  },
+  {
+    "name": "Max",
+    "role": "Lead Programmer",
+    "bio": "Placeholder — background in Unity, gameplay systems, and engine architecture.",
+    "image": "IMG_2891.JPG",
+    "links": {
+      "twitter": "",
+      "github": "",
+      "itch": ""
+    }
+  },
+  {
+    "name": "Placeholder Name",
+    "role": "Art Director",
+    "bio": "Placeholder — 2D/3D artist focused on character design, environments, and visual identity.",
+    "image": "",
+    "links": {
+      "twitter": "",
+      "github": "",
+      "itch": ""
+    }
+  },
+  {
+    "name": "Placeholder Name",
+    "role": "Sound Designer",
+    "bio": "Placeholder — audio design, music composition, and interactive sound systems.",
+    "image": "",
+    "links": {
+      "twitter": "",
+      "github": "",
+      "itch": ""
+    }
+  }
+]

@@ -1,140 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BeetleBox</title>
+  <title>BeetleBox Studios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ── Floating logo ───────────────────────────────────── -->
-<div id="floating-logo">BeetleBox</div>
-
-<!-- ── Floating action bar ────────────────────────────── -->
-<nav id="action-bar">
-  <div class="ab-item">
-    <a href="#work" class="ab-link">Work</a>
-    <div class="ab-dropdown">
-      <a href="#work">Selected Work</a>
+<!-- ── Navbar ─────────────────────────────────────────── -->
+<header id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="navbar-logo">BeetleBox</a>
+    <nav class="navbar-links">
+      <a href="#work"    class="nav-btn"><i class="fa-solid fa-gamepad"></i> Games</a>
+      <a href="#about"   class="nav-btn"><i class="fa-solid fa-circle-info"></i> About</a>
+      <a href="#people"  class="nav-btn"><i class="fa-solid fa-user-group"></i> Team</a>
+      <a href="#contact" class="nav-btn"><i class="fa-solid fa-paper-plane"></i> Contact</a>
+    </nav>
+    <div class="navbar-actions">
+      <div class="search-wrap" id="search-wrap">
+        <input type="text" id="search-input" placeholder="Search…" autocomplete="off" aria-label="Search page" />
+        <span id="search-count"></span>
+        <button class="icon-btn" id="search-btn" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
     </div>
   </div>
-  <div class="ab-item">
-    <a href="#about" class="ab-link">About</a>
-    <div class="ab-dropdown">
-      <a href="#about">Studio</a>
-    </div>
-  </div>
-  <div class="ab-item">
-    <a href="#services" class="ab-link">Capabilities</a>
-    <div class="ab-dropdown">
-      <a href="#services">Real-time Shaders</a>
-      <a href="#services">Physics Simulations</a>
-      <a href="#services">Procedural Generation</a>
-      <a href="#services">Post-processing</a>
-      <a href="#services">Installations</a>
-    </div>
-  </div>
-  <div class="ab-item">
-    <a href="#contact" class="ab-link">Contact</a>
-    <div class="ab-dropdown">
-      <a href="mailto:hello@beetlebox.dev"><i class="fa-solid fa-envelope"></i> hello@beetlebox.dev</a>
-    </div>
-  </div>
-</nav>
+</header>
 
 <!-- ── Hero (WebGL metaball shader) ────────────────────── -->
 <section id="hero">
   <canvas id="metaball-canvas"></canvas>
-
-  <!-- Centered logo image (used as slime mask & display) -->
   <img id="hero-logo" src="bbtextpng.png" alt="BeetleBox" />
-
-  <!-- Viz sandbox arrows -->
   <button class="hero-arrow hero-arrow--left"  id="viz-prev" aria-label="Previous">&#8592;</button>
   <button class="hero-arrow hero-arrow--right" id="viz-next" aria-label="Next">&#8594;</button>
-
-  <!-- Viz label -->
-  <div id="viz-label"></div>
 </section>
 
-<!-- ── Work ────────────────────────────────────────────── -->
-<section id="work">
-  <p class="section-label">Selected work</p>
-  <div class="work-grid">
-    <div class="work-item">
-      <!-- Replace src with your image path, e.g. src="work/fluid-dynamics.jpg" -->
-      <img class="work-img" src="" alt="Fluid Dynamics" />
-      <div class="work-overlay">
-        <p class="work-title">Project 1</p>
-        <p class="work-meta">Text · 2025</p>
-      </div>
-    </div>
-    <div class="work-item">
-      <img class="work-img" src="" alt="Particle Systems" />
-      <div class="work-overlay">
-        <p class="work-title">Project 2</p>
-        <p class="work-meta">Text · 2025</p>
-      </div>
-    </div>
-    <div class="work-item">
-      <img class="work-img" src="" alt="Ray Marching" />
-      <div class="work-overlay">
-        <p class="work-title">Project 3</p>
-        <p class="work-meta">Text · 2024</p>
-      </div>
-    </div>
-    <div class="work-item">
-      <img class="work-img" src="" alt="Cloth Simulation" />
-      <div class="work-overlay">
-        <p class="work-title">Project 4</p>
-        <p class="work-meta">Text · 2024</p>
-      </div>
+<!-- ── Games / Work ────────────────────────────────────── -->
+<section id="work" class="page-section onload-animation" style="--delay: 0ms">
+  <div class="section-inner">
+    <div class="work-grid" id="games-grid">
+      <!-- Populated by cards.js from games.json -->
     </div>
   </div>
 </section>
 
 <!-- ── About ───────────────────────────────────────────── -->
-<section id="about">
-  <p class="section-label">About</p>
-  <div class="about-layout">
-    <h2 class="about-heading">We build things<br>that move.</h2>
-    <div class="about-body">
-      <p>asdf</p>
+<section id="about" class="page-section onload-animation" style="--delay: 50ms">
+  <div class="section-inner">
+    <div class="about-layout">
+      <div class="about-left">
+        <h2 class="about-heading">Games made<br>in Philadelphia.</h2>
+      </div>
+      <div class="about-right card-base">
+        <p class="about-body-text">
+          BeetleBox Studios is an independent game studio based in Philadelphia, PA. We make Unity 2D and 3D games with a focus on tight mechanics, strong art direction, and worlds worth getting lost in.
+        </p>
+        <p class="about-body-text">
+          We're a small team that cares about craft — from the first prototype to the final build. Placeholder text to be updated once copy is ready.
+        </p>
+        <div class="about-tags">
+          <span class="tag">Unity</span>
+          <span class="tag">C#</span>
+          <span class="tag">HLSL</span>
+          <span class="tag">WebGL</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── Services ────────────────────────────────────────── -->
-<section id="services">
-  <p class="section-label">Capabilities</p>
-  <ul class="services-list">
-    <li>Real-time Shaders <span>GLSL / WGSL</span></li>
-    <li>Physics Simulations <span>CPU & GPU</span></li>
-    <li>Procedural Generation <span>Noise, SDF</span></li>
-    <li>Post-processing <span>Multi-pass</span></li>
-    <li>Interactive Installations <span>Web</span></li>
-  </ul>
-</section>
-
-<!-- ── Contact / footer ────────────────────────────────── -->
-<section id="contact">
-  <p class="contact-heading">
-    Let's build<br>
-    something <a href="mailto:hello@graphx.dev">together.</a>
-  </p>
-
-  <div class="contact-footer">
-    <div class="contact-footer-left">
-      <p>© BeetleBox 2026</p>
-      <p>hello@beetlebox.dev</p>
+<!-- ── People ───────────────────────────────────────────── -->
+<section id="people" class="page-section onload-animation" style="--delay: 75ms">
+  <div class="section-inner">
+    <div class="people-grid" id="people-grid">
+      <!-- Populated by cards.js from people.json -->
     </div>
   </div>
 </section>
+
+<!-- ── Contact ─────────────────────────────────────────── -->
+<section id="contact" class="page-section onload-animation" style="--delay: 150ms">
+  <div class="section-inner">
+    <div class="contact-cta card-base">
+      <h2 class="contact-heading">
+        Let's build something<br><a href="mailto:hello@beetlebox.dev">together.</a>
+      </h2>
+      <a href="mailto:hello@beetlebox.dev" class="contact-btn">
+        <i class="fa-solid fa-envelope"></i> hello@beetlebox.dev
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────── -->
+<footer id="site-footer">
+  <div class="footer-inner">
+    <p class="footer-copy">© BeetleBox Studios 2026 · Philadelphia, PA</p>
+  </div>
+</footer>
 
 <!-- ── Dev panel ───────────────────────────────────────── -->
 <div id="dev-panel">
@@ -221,5 +191,7 @@
 </div>
 
 <script src="main.js"></script>
+<script src="cards.js"></script>
+<script src="search.js"></script>
 </body>
 </html>
