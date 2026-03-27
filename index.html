@@ -44,6 +44,13 @@
 
 <!-- ── Games / Work ────────────────────────────────────── -->
 <section id="work" class="page-section onload-animation" style="--delay: 0ms">
+  <!-- Table layer: wood grain texture (grayscale) -->
+  <div class="work-table-bg"></div>
+  <!-- Sticker layer: draggable stickers sit on the table -->
+  <div class="work-sticker-layer" id="sticker-layer"></div>
+  <!-- Darkening overlay between table/stickers and the glass cards above -->
+  <div class="work-table-overlay"></div>
+  <!-- Glass pane: the actual games grid -->
   <div class="section-inner">
     <div class="work-grid" id="games-grid">
       <!-- Populated by cards.js from games.json -->
@@ -193,5 +200,6 @@
 <script src="main.js"></script>
 <script src="cards.js"></script>
 <script src="search.js"></script>
+<script src="stickers.js"></script>
 </body>
 </html>

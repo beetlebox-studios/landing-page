@@ -329,6 +329,80 @@ mark.search-hl.search-hl--current {
 #work {
   background: var(--page-bg);
   border-top: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Layer 1 — wood grain table texture (grayscale) */
+.work-table-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('woodgrain.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1) brightness(0.55);
+  z-index: 0;
+}
+
+/* Layer 2 — sticker canvas (sits on the table, below the overlay) */
+.work-sticker-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none; /* individual stickers re-enable their own events */
+}
+
+/* Layer 3 — half-transparent black overlay (darkens table + stickers visually,
+   pointer-events:none so clicks pass through to stickers below) */
+.work-table-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Layer 4 — the section-inner / games grid floats above everything */
+#work .section-inner {
+  position: relative;
+  z-index: 3;
+}
+
+/* ── Stickers ────────────────────────────────────────── */
+.sticker {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  pointer-events: auto;
+  touch-action: none;
+  /* 0.5px blur smooths pixel-art alpha edges on the outline without visible glow */
+  filter:
+    drop-shadow(-3px -3px 0.5px white)
+    drop-shadow( 3px -3px 0.5px white)
+    drop-shadow(-3px  3px 0.5px white)
+    drop-shadow( 3px  3px 0.5px white)
+    drop-shadow(-3px  0   0.5px white)
+    drop-shadow( 3px  0   0.5px white)
+    drop-shadow( 0   -3px 0.5px white)
+    drop-shadow( 0    3px 0.5px white);
+  transition: transform 0.15s ease;
+  will-change: transform;
+}
+.sticker img {
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  image-rendering: pixelated;
+}
+.sticker:hover {
+  transform: scale(1.08) rotate(var(--sticker-rot, 0deg));
+  z-index: 10;
+}
+.sticker.dragging {
+  cursor: grabbing;
+  transform: scale(1.14) rotate(var(--sticker-rot, 0deg));
+  z-index: 20;
+  transition: none;
 }
 
 .work-grid {
@@ -397,13 +471,28 @@ mark.search-hl.search-hl--current {
   opacity: 0.5;
 }
 
-/* ── Game filter button ───────────────────────────────── */
-/* Positioned top-right of the image wrap, styled like the hero arrows */
-.game-filter-btn {
+/* ── Game image overlay buttons ───────────────────────── */
+/* Stacked group positioned top-right of the image wrap */
+.game-img-btns {
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+.work-card:hover .game-img-btns {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.game-img-btn {
   width: 34px;
   height: 34px;
   display: flex;
@@ -416,34 +505,103 @@ mark.search-hl.search-hl--current {
   font-size: 0.75rem;
   cursor: pointer;
   backdrop-filter: blur(8px);
-  opacity: 0;
-  transform: scale(0.85);
+  text-decoration: none;
   transition:
-    opacity 0.2s var(--ease),
-    transform 0.2s var(--ease),
     color 0.15s var(--ease),
     background 0.15s var(--ease),
-    border-color 0.15s var(--ease);
+    border-color 0.15s var(--ease),
+    transform 0.15s var(--ease);
 }
-/* Reveal on card hover */
-.work-card:hover .game-filter-btn {
-  opacity: 1;
-  transform: scale(1);
-}
-.game-filter-btn:hover {
+.game-img-btn:hover {
   color: var(--text);
   background: color-mix(in oklch, var(--primary) 20%, var(--float-bg));
   border-color: color-mix(in oklch, var(--primary) 50%, transparent);
 }
-.game-filter-btn:active { transform: scale(0.9); }
+.game-img-btn:active { transform: scale(0.9); }
 /* Active state — filter is currently applied for this game */
 .game-filter-btn--active {
-  opacity: 1;
-  transform: scale(1);
   color: var(--primary);
   background: color-mix(in oklch, var(--primary) 20%, var(--float-bg));
   border-color: color-mix(in oklch, var(--primary) 50%, transparent);
   box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary) 20%, transparent);
+}
+
+/* ── Person card — all same size now ─────────────────── */
+
+/* ── Person photo overlay (link buttons on hover) ──────── */
+.person-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-bottom: 0.875rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+}
+.person-card:hover .person-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.person-overlay-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklch, var(--float-bg) 85%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 0.8rem;
+  backdrop-filter: blur(6px);
+  text-decoration: none;
+  transition:
+    color 0.15s var(--ease),
+    background 0.15s var(--ease),
+    border-color 0.15s var(--ease),
+    transform 0.15s var(--ease);
+}
+.person-overlay-btn:hover {
+  color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 20%, var(--float-bg));
+  border-color: color-mix(in oklch, var(--primary) 50%, transparent);
+  transform: translateY(-2px);
+}
+
+/* ── Founder sticker ───────────────────────────────────── */
+/* Vinyl-style sticker stuck to the top-left of the photo */
+.person-founder-sticker {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  pointer-events: none;
+  /* Same hard white outline as the table stickers */
+  filter:
+    drop-shadow(-3px -3px 0 white)
+    drop-shadow( 3px -3px 0 white)
+    drop-shadow(-3px  3px 0 white)
+    drop-shadow( 3px  3px 0 white)
+    drop-shadow(-3px  0   0 white)
+    drop-shadow( 3px  0   0 white)
+    drop-shadow( 0   -3px 0 white)
+    drop-shadow( 0    3px 0 white);
+  transform: rotate(-8deg);
+}
+.person-founder-sticker-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  image-rendering: pixelated;
 }
 
 /* ── People filter states ─────────────────────────────── */
@@ -613,6 +771,7 @@ mark.search-hl.search-hl--current {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
+  align-items: start;
 }
 
 .person-card {

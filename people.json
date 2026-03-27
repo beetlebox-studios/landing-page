@@ -3,22 +3,27 @@
     "name": "Elan",
     "role": "Game Director",
     "bio": "Placeholder — a sentence or two about this person, their focus, and what they bring to the studio.",
-    "image": "IMG_9523.JPG",
+    "image": "elan.JPG",
+    "founder": true,
     "links": {
-      "twitter": "",
-      "github": "",
-      "itch": ""
+      "github": "https://github.com/Elan-Rubin",
+      "linkedin": "https://www.linkedin.com/in/elan-rubin/",
+      "itch": "https://elanmakesgames.itch.io/",
+      "newgrounds": "https://elanmakesgames.newgrounds.com/"
     }
   },
   {
     "name": "Max",
     "role": "Lead Programmer",
     "bio": "Placeholder — background in Unity, gameplay systems, and engine architecture.",
-    "image": "IMG_2891.JPG",
+    "image": "max.JPG",
+    "founder": true,
     "links": {
       "twitter": "",
       "github": "",
-      "itch": ""
+      "itch": "",
+      "newgrounds": "",
+      "linkedin": ""
     }
   },
   {
@@ -26,10 +31,13 @@
     "role": "Art Director",
     "bio": "Placeholder — 2D/3D artist focused on character design, environments, and visual identity.",
     "image": "",
+    "founder": false,
     "links": {
       "twitter": "",
       "github": "",
-      "itch": ""
+      "itch": "",
+      "newgrounds": "",
+      "linkedin": ""
     }
   },
   {
@@ -37,10 +45,13 @@
     "role": "Sound Designer",
     "bio": "Placeholder — audio design, music composition, and interactive sound systems.",
     "image": "",
+    "founder": false,
     "links": {
       "twitter": "",
       "github": "",
-      "itch": ""
+      "itch": "",
+      "newgrounds": "",
+      "linkedin": ""
     }
   }
 ]

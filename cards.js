@@ -131,7 +131,11 @@ const CARD_TYPES = {
 
   // ── Person card ─────────────────────────────────────────────────────────────
   person: {
+    // PNG to use as the founder sticker — swap for any image in the project
+    FOUNDER_STICKER: 'chicken1.png',
+
     buildCard(item, i) {
+      const isFounder = !!item.founder;
       const card = el('div', 'person-card card-base onload-animation');
       card.style.setProperty('--delay', `${i * 60}ms`);
 
@@ -143,19 +147,40 @@ const CARD_TYPES = {
         photoWrap.appendChild(monogram(item.name));
       }
 
+      // Founder sticker — vinyl-style, stuck to the top-left corner
+      if (isFounder) {
+        const sticker = el('div', 'person-founder-sticker');
+        sticker.appendChild(makeImg(this.FOUNDER_STICKER, 'Founder', 'person-founder-sticker-img'));
+        photoWrap.appendChild(sticker);
+      }
+
+      // Hover overlay with link buttons (conditionally rendered)
+      const linkDefs = [
+        { key: 'twitter',    icon: 'fa-brands fa-x-twitter',  label: 'Twitter/X' },
+        { key: 'github',     icon: 'fa-brands fa-github',      label: 'GitHub' },
+        { key: 'itch',       icon: 'fa-brands fa-itch-io',     label: 'itch.io' },
+        { key: 'newgrounds', icon: 'fa-brands fa-newgrounds',  label: 'Newgrounds' },
+        { key: 'linkedin',   icon: 'fa-brands fa-linkedin',    label: 'LinkedIn' },
+      ];
+      const populated = linkDefs.filter(d => item.links?.[d.key]);
+      if (populated.length) {
+        const overlay = el('div', 'person-overlay');
+        populated.forEach(({ key, icon, label }) => {
+          const a = el('a', 'person-overlay-btn');
+          a.href   = item.links[key];
+          a.target = '_blank';
+          a.rel    = 'noopener';
+          a.setAttribute('aria-label', label);
+          a.innerHTML = `<i class="${icon}"></i>`;
+          overlay.appendChild(a);
+        });
+        photoWrap.appendChild(overlay);
+      }
+
       // Info
       const info = el('div', 'person-info');
       info.appendChild(text('p', 'person-name', item.name));
       info.appendChild(text('p', 'person-role', item.role));
-      info.appendChild(text('p', 'person-bio',  item.bio));
-
-      const linkDefs = [
-        { key: 'twitter', icon: 'fa-brands fa-x-twitter', label: 'Twitter/X' },
-        { key: 'github',  icon: 'fa-brands fa-github',    label: 'GitHub' },
-        { key: 'itch',    icon: 'fa-brands fa-itch-io',   label: 'itch.io' },
-      ];
-      const linksEl = buildLinks(item.links, linkDefs, 'person-links');
-      if (linksEl) info.appendChild(linksEl);
 
       card.appendChild(photoWrap);
       card.appendChild(info);
@@ -190,9 +215,22 @@ const CARD_TYPES = {
         imgWrap.appendChild(gifEl);
       }
 
-      // ── Filter button (top-right of image)
+      // ── Overlay buttons (top-right of image): link + filter
+      const btnWrap = el('div', 'game-img-btns');
+
+      if (item.links?.link) {
+        const linkBtn = el('a', 'game-img-btn');
+        linkBtn.href   = item.links.link;
+        linkBtn.target = '_blank';
+        linkBtn.rel    = 'noopener';
+        linkBtn.setAttribute('aria-label', `Play ${item.title}`);
+        linkBtn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
+        linkBtn.addEventListener('click', e => e.stopPropagation());
+        btnWrap.appendChild(linkBtn);
+      }
+
       if (Array.isArray(item.credits)) {
-        const filterBtn = el('button', 'game-filter-btn');
+        const filterBtn = el('button', 'game-img-btn');
         filterBtn.setAttribute('aria-label', `Filter team by ${item.title}`);
         filterBtn.innerHTML = '<i class="fa-solid fa-users"></i>';
         filterBtn.addEventListener('click', (e) => {
@@ -203,8 +241,10 @@ const CARD_TYPES = {
             applyFilter(item.title, item.credits, filterBtn);
           }
         });
-        imgWrap.appendChild(filterBtn);
+        btnWrap.appendChild(filterBtn);
       }
+
+      if (btnWrap.children.length) imgWrap.appendChild(btnWrap);
 
       // ── Info
       const info = el('div', 'work-info');

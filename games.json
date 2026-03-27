@@ -7,6 +7,7 @@
     "gif": "",
     "credits": ["Elan", "Max"],
     "links": {
+      "link": "",
       "itch": "",
       "trailer": ""
     }
@@ -16,9 +17,10 @@
     "meta": "Unity 3D · Action · 2025",
     "description": "Placeholder — a sentence about the game, its genre, and what makes it interesting.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/masknum_thumbnail.png",
-    "gif": "",
+    "gif": "mask.gif",
     "credits": ["Elan"],
     "links": {
+      "link": "",
       "itch": "",
       "trailer": ""
     }
@@ -31,6 +33,7 @@
     "gif": "",
     "credits": ["Elan", "Max"],
     "links": {
+      "link": "",
       "itch": "",
       "trailer": ""
     }
@@ -43,6 +46,7 @@
     "gif": "",
     "credits": [],
     "links": {
+      "link": "",
       "itch": "",
       "trailer": ""
     }
