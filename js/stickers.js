@@ -26,7 +26,6 @@ const STICKER_FILES = [
   'images/stickers/urchin2.png',
 ];
 
-const STICKER_LERP        = 0.18; // drag follow smoothness
 const STICKER_MARGIN      = 24;   // px — minimum distance from section edges
 const STICKER_FILL_RATIO  = 0.30; // fraction of total div area all stickers combined cover
 const OUTLINE_PX          = 3;    // white outline thickness in canvas pixels
@@ -133,7 +132,6 @@ const stickers = [];
 let dragTarget  = null;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
-let rafRunning  = false;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -203,69 +201,36 @@ async function initStickers() {
 
     layer.appendChild(wrap);
 
-    const state = { el: wrap, cx, cy, tx: cx, ty: cy, rot, dragging: false };
+    const state = { el: wrap, cx, cy, rot };
     stickers.push(state);
 
     wrap.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       wrap.setPointerCapture(e.pointerId);
-      dragTarget     = state;
-      state.dragging = true;
+      dragTarget = state;
       wrap.classList.add('dragging');
-      wrap.style.willChange = 'transform'; // promote only while dragging
+      wrap.style.willChange = 'transform';
 
       const sRect = section.getBoundingClientRect();
       dragOffsetX = (e.clientX - sRect.left) - state.cx;
       dragOffsetY = (e.clientY - sRect.top)  - state.cy;
-
-      startRaf();
     });
   });
 
   window.addEventListener('pointermove', (e) => {
     if (!dragTarget) return;
     const sRect = section.getBoundingClientRect();
-    dragTarget.tx = (e.clientX - sRect.left) - dragOffsetX;
-    dragTarget.ty = (e.clientY - sRect.top)  - dragOffsetY;
+    dragTarget.cx = (e.clientX - sRect.left) - dragOffsetX;
+    dragTarget.cy = (e.clientY - sRect.top)  - dragOffsetY;
+    dragTarget.el.style.transform = `translate(${dragTarget.cx}px, ${dragTarget.cy}px) rotate(${dragTarget.rot}deg)`;
   });
 
   window.addEventListener('pointerup', () => {
     if (!dragTarget) return;
-    dragTarget.dragging = false;
     dragTarget.el.classList.remove('dragging');
-    dragTarget.el.style.willChange = 'auto'; // depromote when idle
+    dragTarget.el.style.willChange = 'auto';
     dragTarget = null;
   });
-}
-
-// ── Animation loop ────────────────────────────────────────────────────────────
-
-function startRaf() {
-  if (rafRunning) return;
-  rafRunning = true;
-  requestAnimationFrame(tick);
-}
-
-function tick() {
-  let anyActive = false;
-
-  stickers.forEach(s => {
-    if (!s.dragging) return;
-    const dx = s.tx - s.cx;
-    const dy = s.ty - s.cy;
-    if (Math.abs(dx) < 0.3 && Math.abs(dy) < 0.3) {
-      s.cx = s.tx;
-      s.cy = s.ty;
-    } else {
-      s.cx += dx * STICKER_LERP;
-      s.cy += dy * STICKER_LERP;
-      anyActive = true;
-    }
-    s.el.style.transform = `translate(${s.cx}px, ${s.cy}px) rotate(${s.rot}deg)`;
-  });
-
-  if (anyActive) requestAnimationFrame(tick);
-  else rafRunning = false;
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@
 //   new CardGrid({ src, target, type })
 //
 // JSON shape — person:
-//   { name, role, bio, image, links: { twitter, github, itch } }
+//   { name, role, bio, image, links: { personal, twitter, github, itch, newgrounds, linkedin } }
 //
 // JSON shape — game:
 //   { title, meta, description, image, credits: ["Name", …], links: { itch, trailer } }
@@ -131,11 +131,7 @@ const CARD_TYPES = {
 
   // ── Person card ─────────────────────────────────────────────────────────────
   person: {
-    // PNG to use as the founder sticker — swap for any image in the project
-    FOUNDER_STICKER: 'images/stickers/chicken1.png',
-
     buildCard(item, i) {
-      const isFounder = !!item.founder;
       const card = el('div', 'person-card card-base onload-animation');
       card.style.setProperty('--delay', `${i * 60}ms`);
 
@@ -147,16 +143,10 @@ const CARD_TYPES = {
         photoWrap.appendChild(monogram(item.name));
       }
 
-      // Founder sticker — vinyl-style, stuck to the top-left corner
-      if (isFounder) {
-        const sticker = el('div', 'person-founder-sticker');
-        sticker.appendChild(makeImg(this.FOUNDER_STICKER, 'Founder', 'person-founder-sticker-img'));
-        photoWrap.appendChild(sticker);
-      }
-
       // Hover overlay with link buttons (conditionally rendered)
       const linkDefs = [
-        { key: 'twitter',    icon: 'fa-brands fa-x-twitter',  label: 'Twitter/X' },
+        { key: 'personal',   icon: 'fa-solid fa-globe',        label: 'Personal site' },
+        { key: 'twitter',    icon: 'fa-brands fa-x-twitter',   label: 'Twitter/X' },
         { key: 'github',     icon: 'fa-brands fa-github',      label: 'GitHub' },
         { key: 'itch',       icon: 'fa-brands fa-itch-io',     label: 'itch.io' },
         { key: 'newgrounds', icon: 'fa-brands fa-newgrounds',  label: 'Newgrounds' },

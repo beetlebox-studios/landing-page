@@ -1,57 +1,78 @@
 [
   {
     "name": "Elan",
-    "role": "Game Director",
-    "bio": "Placeholder — a sentence or two about this person, their focus, and what they bring to the studio.",
+    "role": "Programmer and Designer",
+    "bio": "bio text goes here",
     "image": "images/elan.JPG",
     "founder": true,
     "links": {
+      "personal": "https://elanrubin.com/",
       "github": "https://github.com/Elan-Rubin",
       "linkedin": "https://www.linkedin.com/in/elan-rubin/",
-      "itch": "https://elanmakesgames.itch.io/",
-      "newgrounds": "https://elanmakesgames.newgrounds.com/"
+      "itch": "https://elanmakesgames.itch.io/"
     }
   },
   {
     "name": "Max",
-    "role": "Lead Programmer",
-    "bio": "Placeholder — background in Unity, gameplay systems, and engine architecture.",
+    "role": "Artist and Designer",
+    "bio": "bio text goes here",
     "image": "images/max.JPG",
     "founder": true,
     "links": {
-      "twitter": "",
-      "github": "",
-      "itch": "",
-      "newgrounds": "",
-      "linkedin": ""
+      "twitter": "https://x.com/Alphons63",
+      "itch": "https://alphons6.itch.io/"
     }
   },
   {
-    "name": "Placeholder Name",
-    "role": "Art Director",
-    "bio": "Placeholder — 2D/3D artist focused on character design, environments, and visual identity.",
-    "image": "",
-    "founder": false,
+    "name": "Ryan",
+    "role": "Programmer",
+    "bio": "bio text goes here",
+    "image": "images/ryan.JPG",
+    "founder": true,
     "links": {
-      "twitter": "",
-      "github": "",
-      "itch": "",
-      "newgrounds": "",
-      "linkedin": ""
+      "github": "https://github.com/Ryan-Brosius",
+      "linkedin": "https://www.linkedin.com/in/ryanbrosius/"
     }
   },
   {
-    "name": "Placeholder Name",
-    "role": "Sound Designer",
-    "bio": "Placeholder — audio design, music composition, and interactive sound systems.",
+    "name": "Michael",
+    "role": "Game designer",
+    "bio": "bio text goes here",
     "image": "",
     "founder": false,
     "links": {
-      "twitter": "",
-      "github": "",
-      "itch": "",
-      "newgrounds": "",
-      "linkedin": ""
+      "itch": "https://mr-qwil.itch.io/"
+    }
+  },
+  {
+    "name": "AnglerFishArt",
+    "role": "Concept Artist",
+    "bio": "bio text goes here",
+    "image": "",
+    "founder": false,
+    "links": {
+      "twitter": "https://x.com/AnglerFishart13"
+    }
+  },
+  {
+    "name": "Mafgar",
+    "role": "Concept Artist",
+    "bio": "bio text goes here",
+    "image": "",
+    "founder": false,
+    "links": {
+      "personal": "https://www.mafgar.com/"
+    }
+  },
+  {
+    "name": "hutthutthutt",
+    "role": "Puzzle Designer",
+    "bio": "bio text goes here",
+    "image": "",
+    "founder": false,
+    "links": {
+      "itch": "https://hutt3.itch.io/",
+      "youtube" : "https://www.youtube.com/@hutthutthutt7321"
     }
   }
 ]
