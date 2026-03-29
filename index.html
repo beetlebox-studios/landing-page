@@ -34,12 +34,9 @@
   </div>
 </header>
 
-<!-- ── Hero (WebGL metaball shader) ────────────────────── -->
+<!-- ── Hero ──────────────────────────────────────────── -->
 <section id="hero">
-  <canvas id="metaball-canvas"></canvas>
   <img id="hero-logo" src="images/bbtextpng.png" alt="BeetleBox" />
-  <button class="hero-arrow hero-arrow--left"  id="viz-prev" aria-label="Previous">&#8592;</button>
-  <button class="hero-arrow hero-arrow--right" id="viz-next" aria-label="Next">&#8594;</button>
 </section>
 
 <!-- ── Games / Work ────────────────────────────────────── -->
@@ -97,11 +94,11 @@
   <div class="section-inner">
     <div class="contact-cta card-base">
       <h2 class="contact-heading">
-        Let's build something<br><a href="mailto:hello@beetlebox.dev">together.</a>
+        Let's build something<br>together.
       </h2>
-      <a href="mailto:hello@beetlebox.dev" class="contact-btn">
+      <!-- <a href="mailto:hello@beetlebox.dev" class="contact-btn">
         <i class="fa-solid fa-envelope"></i> hello@beetlebox.dev
-      </a>
+      </a> -->
     </div>
   </div>
 </section>
@@ -109,93 +106,14 @@
 <!-- ── Footer ─────────────────────────────────────────── -->
 <footer id="site-footer">
   <div class="footer-inner">
-    <p class="footer-copy">© BeetleBox Studios 2026 · Philadelphia, PA</p>
+    <p class="footer-copy"></p>
+  <script>
+    document.querySelector('.footer-copy').textContent = 
+      `© BeetleBox Studios ${new Date().getFullYear()} · Philadelphia, PA`;
+  </script>
   </div>
 </footer>
 
-<!-- ── Dev panel ───────────────────────────────────────── -->
-<div id="dev-panel">
-  <h2>Dev — Metaball</h2>
-  <div class="dev-row">
-    <label>Threshold</label>
-    <input type="range" id="s-threshold" min="0.3" max="3.0" step="0.01" value="1.92">
-    <span class="val" id="v-threshold">1.92</span>
-  </div>
-  <div class="dev-row">
-    <label>Mouse radius</label>
-    <input type="range" id="s-mouse-r" min="10" max="200" step="1" value="59">
-    <span class="val" id="v-mouse-r">59</span>
-  </div>
-  <div class="dev-row">
-    <label>Mouse lerp</label>
-    <input type="range" id="s-lerp" min="0.01" max="1.0" step="0.01" value="0.85">
-    <span class="val" id="v-lerp">0.85</span>
-  </div>
-  <div class="dev-row">
-    <label>Pixel size</label>
-    <input type="range" id="s-pixel" min="1" max="32" step="1" value="6">
-    <span class="val" id="v-pixel">6</span>
-  </div>
-  <h2 style="margin-top:12px">Dev — Logo</h2>
-  <div class="dev-row">
-    <label>Logo strength</label>
-    <input type="range" id="s-logo-str" min="0.5" max="50.0" step="0.5" value="30.0">
-    <span class="val" id="v-logo-str">30.00</span>
-  </div>
-  <div class="dev-row">
-    <label>Logo expand</label>
-    <input type="range" id="s-logo-expand" min="0" max="80" step="1" value="36">
-    <span class="val" id="v-logo-expand">36</span>
-  </div>
-  <h2 style="margin-top:12px">Dev — Slime</h2>
-  <div class="dev-row">
-    <label>Gravity</label>
-    <input type="range" id="s-gravity" min="0.01" max="0.5" step="0.005" value="0.300">
-    <span class="val" id="v-gravity">0.300</span>
-  </div>
-  <div class="dev-row">
-    <label>Viscosity</label>
-    <input type="range" id="s-viscosity" min="0.5" max="0.999" step="0.001" value="0.99">
-    <span class="val" id="v-viscosity">0.99</span>
-  </div>
-  <div class="dev-row">
-    <label>Surf tension</label>
-    <input type="range" id="s-tension" min="0.001" max="0.5" step="0.001" value="0.01">
-    <span class="val" id="v-tension">0.01</span>
-  </div>
-  <div class="dev-row">
-    <label>Detach dist</label>
-    <input type="range" id="s-detach" min="5" max="200" step="1" value="22">
-    <span class="val" id="v-detach">22</span>
-  </div>
-  <div class="dev-row">
-    <label>Stretch frames</label>
-    <input type="range" id="s-stretch" min="10" max="300" step="1" value="22">
-    <span class="val" id="v-stretch">22</span>
-  </div>
-  <div class="dev-row">
-    <label>Spawn interval</label>
-    <input type="range" id="s-spawn" min="10" max="300" step="5" value="10">
-    <span class="val" id="v-spawn">10</span>
-  </div>
-  <div class="dev-row">
-    <label>Drip size min</label>
-    <input type="range" id="s-drip-min" min="5" max="60" step="1" value="8">
-    <span class="val" id="v-drip-min">8</span>
-  </div>
-  <div class="dev-row">
-    <label>Drip size max</label>
-    <input type="range" id="s-drip-max" min="10" max="100" step="1" value="16">
-    <span class="val" id="v-drip-max">16</span>
-  </div>
-  <h2 style="margin-top:12px">Dev — Perf</h2>
-  <div class="dev-row"><label>FPS</label><span class="val" id="v-fps">—</span></div>
-  <div class="dev-row"><label>Frame ms</label><span class="val" id="v-frame-ms">—</span></div>
-  <div class="dev-row"><label>Drips</label><span class="val" id="v-drips">—</span></div>
-  <div class="dev-row"><label>Frag pixels</label><span class="val" id="v-frag-px">—</span></div>
-  <div class="dev-row"><label>Canvas W</label><span class="val" id="v-res-w">—</span></div>
-  <div class="dev-row"><label>Canvas H</label><span class="val" id="v-res-h">—</span></div>
-</div>
 
 <script src="js/main.js"></script>
 <script src="js/cards.js"></script>
