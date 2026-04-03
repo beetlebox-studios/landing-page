@@ -4,7 +4,7 @@
     "meta": "Unity 2D · Retro · 2026",
     "description": "Puru Puru is a pufferfish who wants his tank all to himself.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/bubblefish_thumbnail.png",
-    "gif": "images/games/bubblefish.gif",
+    "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/bubblefish.gif",
     "credits": ["Elan", "Max"],
     "links": {
       "link": "https://elanmakesgames.itch.io/bubblefish"
@@ -15,7 +15,7 @@
     "meta": "Unity 2D · Story · 2026",
     "description" : "Infiltrate a bizzare, masked cult.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/masknum_thumbnail.png",
-    "gif": "images/games/mask.gif",
+    "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/mask.gif",
     "credits": ["Elan", "Max", "Ryan", "Michael"],
     "links": {
       "link": "https://elanmakesgames.itch.io/mask"
@@ -26,7 +26,7 @@
     "meta": "Unity 3D · Exploration · 2025",
     "description": "Explore a mysterious field.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/molith_thumbnail.png",
-    "gif": "images/games/mono.gif",
+    "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/mono.gif",
     "credits": ["Elan", "Max", "Mafgar"],
     "links": {
       "link": "https://elanmakesgames.itch.io/molith"
