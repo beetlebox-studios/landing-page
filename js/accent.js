@@ -15,11 +15,51 @@ function hueToHex(hue) {
   return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
 }
 
+// ── Favicon recoloring ────────────────────────────────────────────────────────
+// Draws beetle_square.png onto a canvas, overlays the accent color using the
+// same grayscale + color blend-mode technique as the hero logo CSS mask,
+// then sets the favicon href to the resulting data URL.
+
+const FAVICON_SRC = 'https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/logo/beetle_square.png';
+const FAVICON_SIZE = 64;
+let _faviconImg = null; // cached Image element
+
+function updateFavicon(hex) {
+  const draw = (img) => {
+    const canvas = document.createElement('canvas');
+    canvas.width  = FAVICON_SIZE;
+    canvas.height = FAVICON_SIZE;
+    const ctx = canvas.getContext('2d');
+
+    // 1. Fill solid accent color
+    ctx.fillStyle = hex;
+    ctx.fillRect(0, 0, FAVICON_SIZE, FAVICON_SIZE);
+
+    // 2. Mask to the image's alpha shape — keeps only pixels where the logo is
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.drawImage(img, 0, 0, FAVICON_SIZE, FAVICON_SIZE);
+    ctx.globalCompositeOperation = 'source-over';
+
+    const link = document.querySelector('link[rel="icon"]');
+    if (link) link.href = canvas.toDataURL('image/png');
+  };
+
+  if (_faviconImg?.complete && _faviconImg.naturalWidth) {
+    draw(_faviconImg);
+  } else {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => { _faviconImg = img; draw(img); };
+    img.src = FAVICON_SRC;
+  }
+}
+
 function applyHue(hue) {
   document.documentElement.style.setProperty('--hue', hue);
   const hex = hueToHex(hue);
   const orb = document.getElementById('accent-orb');
   if (orb) orb.style.background = `linear-gradient(to bottom, ${hueToHex((hue + 20) % 360)}, ${hex})`;
+  updateFavicon(hex);
 }
 
 (function initAccent() {
