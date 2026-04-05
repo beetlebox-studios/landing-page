@@ -19,11 +19,16 @@
   <div class="navbar-inner">
     <a href="#" class="navbar-logo">BeetleBox</a>
     <nav class="navbar-links">
-      <a href="#work"    class="nav-btn"><i class="fa-solid fa-gamepad"></i> Games</a>
-      <!-- <a href="#about"   class="nav-btn"><i class="fa-solid fa-circle-info"></i> About</a> -->
-      <a href="#people"  class="nav-btn"><i class="fa-solid fa-user-group"></i> Team</a>
-      <a href="#contact" class="nav-btn"><i class="fa-solid fa-paper-plane"></i> Contact</a>
-      <a href="#gallery" class="nav-btn"><i class="fa-solid fa-images"></i> Gallery</a>
+      <div class="nav-dropdown-wrap">
+        <a href="#work" class="nav-btn">Games</a>
+        <div class="nav-dropdown">
+          <a href="/games" class="nav-dropdown-item">Mini Games</a>
+        </div>
+      </div>
+      <!-- <a href="#about"   class="nav-btn">About</a> -->
+      <a href="#people"  class="nav-btn">Team</a>
+      <a href="#contact" class="nav-btn">Contact</a>
+      <a href="#gallery" class="nav-btn">Gallery</a>
     </nav>
     <div class="navbar-actions">
       <!-- Language picker -->
@@ -74,7 +79,13 @@
   <!-- Glass pane: the actual games grid -->
   <div class="section-inner">
     <div class="work-grid" id="games-grid">
-      <!-- Populated by cards.js from games.json -->
+      <!-- Populated by cards.js from games.json (main games only) -->
+    </div>
+    <div class="jam-section">
+      <h3 class="jam-heading">Game Jams</h3>
+      <div class="jam-grid" id="jam-grid">
+        <!-- Populated by cards.js from games.json (jam games only) -->
+      </div>
     </div>
   </div>
 </section>

@@ -331,7 +331,77 @@ function buildLinks(links, defs, className) {
   return wrap;
 }
 
-// ── Instantiate grids ─────────────────────────────────────────────────────────
+// ── Game jam card (compact) ───────────────────────────────────────────────────
 
-new CardGrid({ src: 'data/games.json',  target: 'games-grid',  type: 'game'   });
+CARD_TYPES['game-jam'] = {
+  buildCard(item, i) {
+    const card = el('div', 'jam-card card-base onload-animation');
+    card.style.setProperty('--delay', `${i * 40}ms`);
+
+    // Image wrap with optional GIF preview on hover
+    const imgWrap = el('div', 'jam-img-wrap');
+
+    if (item.image) {
+      imgWrap.appendChild(makeImg(item.image, item.title, 'jam-thumb'));
+    }
+
+    if (item.gif) {
+      const gifEl = makeImg('', item.title, 'jam-gif');
+      gifEl.setAttribute('aria-hidden', 'true');
+      card.addEventListener('mouseenter', () => { gifEl.src = item.gif; });
+      card.addEventListener('mouseleave', () => { gifEl.src = ''; });
+      imgWrap.appendChild(gifEl);
+    }
+
+    card.appendChild(imgWrap);
+
+    const info = el('div', 'jam-info');
+    info.appendChild(text('p', 'jam-title', item.title));
+    info.appendChild(text('p', 'jam-meta',  item.meta));
+
+    if (item.links?.link) {
+      const a = el('a', 'jam-link');
+      a.href   = item.links.link;
+      a.target = '_blank';
+      a.rel    = 'noopener';
+      a.setAttribute('aria-label', `Play ${item.title}`);
+      a.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
+      info.appendChild(a);
+    }
+
+    card.appendChild(info);
+    return card;
+  }
+};
+
+// ── Split loader — main games vs jam games ────────────────────────────────────
+
+(async () => {
+  let items;
+  try {
+    const res = await fetch('data/games.json');
+    items = await res.json();
+  } catch (e) {
+    console.warn('CardGrid: failed to load games.json', e);
+    return;
+  }
+
+  const mainGrid = document.getElementById('games-grid');
+  const jamGrid  = document.getElementById('jam-grid');
+  GRID_REGISTRY['games-grid'] = [];
+  GRID_REGISTRY['jam-grid']   = [];
+
+  items.forEach((item, i) => {
+    if (item.jam) {
+      const card = CARD_TYPES['game-jam'].buildCard(item, i);
+      GRID_REGISTRY['jam-grid'].push({ item, card });
+      jamGrid?.appendChild(card);
+    } else {
+      const card = CARD_TYPES['game'].buildCard(item, i);
+      GRID_REGISTRY['games-grid'].push({ item, card });
+      mainGrid?.appendChild(card);
+    }
+  });
+})();
+
 new CardGrid({ src: 'data/people.json', target: 'people-grid', type: 'person' });

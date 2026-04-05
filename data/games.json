@@ -5,18 +5,27 @@
     "description": "Puru Puru is a pufferfish who wants his tank all to himself.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/bubblefish_thumbnail.png",
     "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/bubblefish.gif",
-    "credits": ["Elan", "Max"],
     "links": {
       "link": "https://elanmakesgames.itch.io/bubblefish"
     }
   },
   {
+    "title": "Paper Game",
+    "meta": "Unity 2D · In Development",
+    "description": "A puzzle game about folding paper.",
+    "image": "",
+    "gif": "",
+    "links": {
+      "link": ""
+    }
+  },
+  {
     "title": "Masknum Opus",
     "meta": "Unity 2D · Story · 2026",
-    "description" : "Infiltrate a bizzare, masked cult.",
+    "description": "Infiltrate a bizarre, masked cult.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/masknum_thumbnail.png",
     "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/mask.gif",
-    "credits": ["Elan", "Max", "Ryan", "Michael"],
+    "jam": true,
     "links": {
       "link": "https://elanmakesgames.itch.io/mask"
     }
@@ -27,20 +36,9 @@
     "description": "Explore a mysterious field.",
     "image": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/project_thumbnails/molith_thumbnail.png",
     "gif": "https://raw.githubusercontent.com/beetlebox-studios/branding-assets/main/preview_gifs/mono.gif",
-    "credits": ["Elan", "Max", "Mafgar"],
+    "jam": true,
     "links": {
       "link": "https://elanmakesgames.itch.io/molith"
-    }
-  },
-  {
-    "title": "Paper Game",
-    "meta": "Unity 2D · In Development",
-    "description": "A puzzle game about folding paper.",
-    "image": "",
-    "gif": "",
-    "credits": ["Ryan", "Max", "Mafgar", "hutthutthutt"],
-    "links": {
-      "link": ""
     }
   }
 ]
