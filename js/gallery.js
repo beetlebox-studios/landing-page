@@ -156,11 +156,6 @@ function gBuildCards(items) {
     tint.className = 'polaroid__tint';
     photoWrap.appendChild(tint);
 
-    // Light bar sheen
-    const lightBar = document.createElement('div');
-    lightBar.className = 'polaroid__light';
-    photoWrap.appendChild(lightBar);
-
     polaroid.appendChild(photoWrap);
 
     // White bottom strip
