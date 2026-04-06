@@ -27,8 +27,8 @@ let gStage, gCardsRoot;
 let gItems     = [];
 let gPositions = null;
 
-let CARD_W     = 280;
-let CARD_H     = 360;
+let CARD_W     = 260;
+let CARD_H     = 340;
 let G_STEP     = CARD_W + GALLERY_GAP;
 let G_TRACK    = 0;
 let G_SCROLL_X = 0;
@@ -129,35 +129,52 @@ function gBuildCards(items) {
   gItems = [];
 
   items.forEach((data, i) => {
+    // Outer shell — receives JS 3D transform
     const card = document.createElement('div');
     card.className = 'gallery-card';
     card.style.willChange = 'transform';
 
-    const inner = document.createElement('div');
-    inner.className = 'gallery-card__inner';
+    // Polaroid frame
+    const polaroid = document.createElement('div');
+    polaroid.className = 'polaroid';
 
-    const front = document.createElement('div');
-    front.className = 'gallery-card__front';
+    // Photo area
+    const photoWrap = document.createElement('div');
+    photoWrap.className = 'polaroid__photo';
 
     const img = new Image();
-    img.className  = 'gallery-card__img';
+    img.className  = 'polaroid__img';
     img.decoding   = 'async';
     img.loading    = 'eager';
     img.draggable  = false;
     img.src        = data.image;
     img.alt        = data.description || '';
-    front.appendChild(img);
+    photoWrap.appendChild(img);
 
-    const back = document.createElement('div');
-    back.className = 'gallery-card__back';
-    const desc = document.createElement('p');
-    desc.className   = 'gallery-card__desc';
-    desc.textContent = data.description || '';
-    back.appendChild(desc);
+    // Tint overlay (develops away on hover)
+    const tint = document.createElement('div');
+    tint.className = 'polaroid__tint';
+    photoWrap.appendChild(tint);
 
-    inner.appendChild(front);
-    inner.appendChild(back);
-    card.appendChild(inner);
+    // Light bar sheen
+    const lightBar = document.createElement('div');
+    lightBar.className = 'polaroid__light';
+    photoWrap.appendChild(lightBar);
+
+    polaroid.appendChild(photoWrap);
+
+    // White bottom strip
+    const strip = document.createElement('div');
+    strip.className = 'polaroid__strip';
+    if (data.description) {
+      const label = document.createElement('p');
+      label.className   = 'polaroid__label';
+      label.textContent = data.description;
+      strip.appendChild(label);
+    }
+    polaroid.appendChild(strip);
+
+    card.appendChild(polaroid);
     gCardsRoot.appendChild(card);
 
     gItems.push({ el: card, img, x: i * G_STEP });

@@ -437,45 +437,56 @@ mark.search-hl.search-hl--current {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
-  padding: 10px 14px;
+  padding: 10px 8px;
   z-index: 200;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
-.accent-wrap.accent-open .accent-popup { display: block; }
+.accent-wrap.accent-open .accent-popup {
+  display: flex;
+}
 
 .hue-slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 160px;
-  height: 10px;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 10px;
+  height: 140px;
   border-radius: 999px;
-  background: linear-gradient(to right,
-    hsl(0,100%,55%), hsl(30,100%,55%), hsl(60,100%,55%),
-    hsl(90,100%,55%), hsl(120,100%,55%), hsl(150,100%,55%),
-    hsl(180,100%,55%), hsl(210,100%,55%), hsl(240,100%,55%),
-    hsl(270,100%,55%), hsl(300,100%,55%), hsl(330,100%,55%),
-    hsl(360,100%,55%));
+  background: linear-gradient(to bottom,
+    #f5f5f5,
+    oklch(0.75 0.18 140),
+    #6b7068);
   outline: none;
   cursor: pointer;
   border: none;
 }
 .hue-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: var(--page-bg);
-  border: 2px solid rgba(255,255,255,0.25);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  background: var(--thumb-color, var(--primary));
+  border: 2px solid rgba(255,255,255,0.35);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
   cursor: pointer;
 }
 .hue-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: var(--page-bg);
-  border: 2px solid rgba(255,255,255,0.25);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  background: var(--thumb-color, var(--primary));
+  border: 2px solid rgba(255,255,255,0.35);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
   cursor: pointer;
+}
+
+.accent-reset-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 0.75rem;
 }
 
 /* ── Hero ────────────────────────────────────────────── */
@@ -1080,43 +1091,60 @@ mark.search-hl.search-hl--current {
   /* Cards are absolutely positioned children */
 }
 
+/* ── Polaroid shake + develop keyframes ──────────────── */
+@keyframes polaroid-shake {
+  0%   { transform: rotate(0deg); }
+  15%  { transform: rotate(-4deg) translateX(-3px); }
+  30%  { transform: rotate( 4deg) translateX( 3px); }
+  45%  { transform: rotate(-3deg) translateX(-2px); }
+  60%  { transform: rotate( 3deg) translateX( 2px); }
+  75%  { transform: rotate(-1.5deg); }
+  90%  { transform: rotate( 1deg); }
+  100% { transform: rotate(0deg); }
+}
+
 /* ── Individual gallery card ─────────────────────────── */
-/*
-  Two-layer approach so 3-D carousel positioning and the flip
-  don't fight each other:
-    .gallery-card       — outer shell: receives JS translate3d/rotateY/scale
-    .gallery-card__inner — inner shell: does the flip rotation
-*/
 .gallery-card {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 280px;
-  height: 360px;
-  margin-left: -140px; /* -width/2 */
-  /* transform-style flat here so JS 3-D transform applies cleanly */
+  width: 260px;
+  height: 340px;
+  margin-left: -130px;
   transition: box-shadow 0.25s var(--ease);
   user-select: none;
   box-shadow: var(--shadow);
 }
 .gallery-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
 }
 
-/* Inner wrapper — no flip, just contains front + overlay */
-.gallery-card__inner {
+/* Polaroid frame */
+.polaroid {
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  background: #f0ede8;
+  border-radius: 4px;
+  padding: 10px 10px 0 10px;
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+.gallery-card:hover .polaroid {
+  animation: polaroid-shake 0.55s var(--ease) both;
+}
+
+/* Photo area */
+.polaroid__photo {
+  position: relative;
+  flex: 1;
   overflow: hidden;
+  background: #222;
 }
 
-/* Front — photo */
-.gallery-card__front {
-  position: absolute;
-  inset: 0;
-}
-.gallery-card__img {
+.polaroid__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1124,61 +1152,80 @@ mark.search-hl.search-hl--current {
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;
-  /* Grayscale by default, same as person photos */
-  filter: grayscale(1) brightness(0.9);
-  transition: transform 0.5s var(--ease), filter 0.45s var(--ease);
+  filter: grayscale(1) brightness(0.85);
+  transition: filter 0.6s var(--ease) 0.1s;
 }
-.gallery-card:hover .gallery-card__img {
-  transform: scale(1.04);
+.gallery-card:hover .polaroid__img {
   filter: none;
 }
 
-/* Accent tint overlay — colorizes via blend mode, fades on hover */
-.gallery-card__front::after {
-  content: '';
+/* Accent tint — blends over the grayscale, develops away on hover */
+.polaroid__tint {
   position: absolute;
   inset: 0;
   background: var(--primary);
   mix-blend-mode: color;
-  opacity: 0.75;
-  transition: opacity 0.45s var(--ease);
+  opacity: 0.72;
   pointer-events: none;
+  transition: opacity 0.6s var(--ease) 0.1s;
 }
-.gallery-card:hover .gallery-card__front::after {
+.gallery-card:hover .polaroid__tint {
   opacity: 0;
 }
 
-/* Description overlay — fades in on hover */
-.gallery-card__back {
+/* Light bar sheen — sweeps across on hover */
+.polaroid__light {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: flex-end;
-  padding: 1.25rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 55%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.3s var(--ease);
-}
-.gallery-card--flipped .gallery-card__back,
-.gallery-card:hover .gallery-card__back {
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 65%
+  );
   opacity: 1;
+  transition: opacity 0.4s var(--ease);
 }
-.gallery-card__desc {
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+.gallery-card:hover .polaroid__light {
+  opacity: 0;
 }
 
-/* On mobile: smaller cards, tap toggles flip */
+/* White bottom strip */
+.polaroid__strip {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.polaroid__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* On mobile: smaller cards */
 @media (max-width: 640px) {
   .gallery-stage {
     height: 360px;
   }
   .gallery-card {
-    width: 210px;
-    height: 280px;
-    margin-left: -105px;
+    width: 200px;
+    height: 270px;
+    margin-left: -100px;
+  }
+  .polaroid__strip {
+    height: 44px;
   }
 }
 
